@@ -304,7 +304,18 @@ def createhtmlcurrent(current, pollution):
     content += """</tr>
                                         </table>
                                         <br>
-                                        <h4>Global air quality : <b style="color : green;">"""+ str(round(air_quality_index*100)) +"""/100</b></h4>
+                                        <h4>Global air quality : <b style="color : """
+    if(round(air_quality_index*100) >= 90):
+        content += "green"
+    elif(round(air_quality_index*100) >= 80):
+        content += "lightgreen"
+    elif(round(air_quality_index*100) >= 70):
+        content += "yellowgreen"
+    elif(round(air_quality_index*100) >= 50):
+        content += "orange"
+    else:
+        content += "red"
+    content +=""";">"""+ str(round(air_quality_index*100)) +"""/100</b></h4>
                                     </div>
                                 </div>
                             </div>
