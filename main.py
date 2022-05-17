@@ -369,7 +369,7 @@ def convertotimg(txt):
         'POST',
         'https://api.pspdfkit.com/build',
         headers={
-            'Authorization': "'Bearer  " + keyconvert + "'"
+            'Authorization': "Bearer  " + keyconvert
         },
         files={
             'document': open(os.path.abspath(app.static_folder + "/" + txt+".html"), 'rb')
