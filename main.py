@@ -369,7 +369,7 @@ def convertotimg(txt):
         'POST',
         'https://api.pspdfkit.com/build',
         headers={
-            'Authorization': "Bearer  " + "pdf_live_n0ZvClBNXTcOEP6CqMI7rjDwurXhQyy3aMWUf9vEGS2"
+            'Authorization': 'Bearer pdf_live_n0ZvClBNXTcOEP6CqMI7rjDwurXhQyy3aMWUf9vEGS2'
         },
         files={
             'document': open(os.path.abspath(app.static_folder + "/" + txt+".html"), 'rb')
