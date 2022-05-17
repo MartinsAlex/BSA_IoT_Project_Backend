@@ -12,13 +12,12 @@ app = Flask(__name__, static_folder='files')
 LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
 
-owmcredits = os.environ["OWMKEY"]
-print(owmcredits)
+owmcredits = os.environ["OWMKEY"][2:]
 
 @app.route("/")
 def hello(name=None):
     key = owmcredits
-    return render_template('base.html', name=name, key = key)
+    return render_template('base.html', name=name)
 
 
 @app.route("/forecast/")
@@ -370,7 +369,7 @@ def convertotimg(txt):
         'POST',
         'https://api.pspdfkit.com/build',
         headers={
-            'Authorization': 'Bearer ' + os.environ["CONVKEY"]
+            'Authorization': 'Bearer ' + os.environ["CONVKEY"][2:]
         },
         files={
             'document': open(os.path.abspath(app.static_folder + "/" + txt+".html"), 'rb')
