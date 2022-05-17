@@ -17,7 +17,9 @@ owmcredits = os.environ["OWMKEY"][2:]
 @app.route("/")
 def hello(name=None):
     key = owmcredits
-    return render_template('base.html', name=name, key = owmcredits)
+    r_forecast = requests.get(
+        f'http://api.openweathermap.org/data/2.5/forecast?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
+    return render_template('base.html', name=name, key = owmcredits, result = r_forecast)
 
 
 @app.route("/forecast/")
