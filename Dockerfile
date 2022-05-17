@@ -11,7 +11,7 @@ ENV APP_HOME /app
 WORKDIR $APP_HOME
 COPY . ./
 
-ENV OWNKEY = "c6bbb95008347076780b7ce4a89f2224"
+ENV OWMKEY = "c6bbb95008347076780b7ce4a89f2224"
 ENV CONVKEY = "pdf_live_n0ZvClBNXTcOEP6CqMI7rjDwurXhQyy3aMWUf9vEGS2"
 
 # Install production dependencies.
