@@ -1,4 +1,8 @@
 flask
 requests
 datetime
+PIL
+sys
+json
+os
 gunicorn==20.1.0
