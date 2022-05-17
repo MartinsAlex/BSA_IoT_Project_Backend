@@ -17,7 +17,7 @@ owmcredits = os.environ["OWMKEY"][2:]
 @app.route("/")
 def hello(name=None):
     key = owmcredits
-    return render_template('base.html', name=name)
+    return render_template('base.html', name=name, key = owmcredits)
 
 
 @app.route("/forecast/")
