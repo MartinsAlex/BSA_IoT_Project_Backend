@@ -12,6 +12,7 @@ app = Flask(__name__, static_folder='files')
 LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
 
+owmcredits = os.environ["OWMKEY"]
 
 @app.route("/")
 def hello(name=None):
@@ -21,7 +22,7 @@ def hello(name=None):
 @app.route("/forecast/")
 def forecast(name=None):
     r_forecast = requests.get(
-        f'http://api.openweathermap.org/data/2.5/forecast?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid=c6bbb95008347076780b7ce4a89f2224').json()
+        f'http://api.openweathermap.org/data/2.5/forecast?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
     createhtmlforecast(r_forecast)
     return render_template('tempforecast.html', name=name, forecast=r_forecast)
 
@@ -31,9 +32,9 @@ def current(name=None):
     LAUSANNE_LATITUDE = 46.52751093142267
     LAUSANNE_LONGITUDE = 6.626519003698495
     r_current = requests.get(
-        f'https://api.openweathermap.org/data/2.5/weather?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid=c6bbb95008347076780b7ce4a89f2224').json()
+        f'https://api.openweathermap.org/data/2.5/weather?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
     r_pollution = requests.get(
-        f'http://api.openweathermap.org/data/2.5/air_pollution?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid=c6bbb95008347076780b7ce4a89f2224').json()
+        f'http://api.openweathermap.org/data/2.5/air_pollution?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
     print(r_current, sys.stderr)
     createhtmlcurrent(r_current, r_pollution)
 
@@ -367,7 +368,7 @@ def convertotimg(txt):
         'POST',
         'https://api.pspdfkit.com/build',
         headers={
-            'Authorization': 'Bearer pdf_live_n0ZvClBNXTcOEP6CqMI7rjDwurXhQyy3aMWUf9vEGS2'
+            'Authorization': 'Bearer ' + os.environ["CONVKEY"]
         },
         files={
             'document': open(os.path.abspath(app.static_folder + "/" + txt+".html"), 'rb')
