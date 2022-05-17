@@ -1,2 +1,4 @@
 flask
+requests
+datetime
 gunicorn==20.1.0
