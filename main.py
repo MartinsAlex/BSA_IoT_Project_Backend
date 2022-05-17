@@ -13,13 +13,11 @@ LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
 
 owmcredits = os.environ["OWMKEY"][2:]
+keyconvert = os.environ["CONVKEY"][2:]
 
 @app.route("/")
 def hello(name=None):
-    key = owmcredits
-    r_forecast = requests.get(
-        f'http://api.openweathermap.org/data/2.5/forecast?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
-    return render_template('base.html', name=name, key = owmcredits, result = r_forecast)
+    return render_template('base.html', name=name)
 
 
 @app.route("/forecast/")
@@ -249,7 +247,7 @@ def createhtmlcurrent(current, pollution):
                                             <td > <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-thermometer" viewBox="0 0 16 16">
                                                 <path d="M8 14a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
                                                 <path d="M8 0a2.5 2.5 0 0 0-2.5 2.5v7.55a3.5 3.5 0 1 0 5 0V2.5A2.5 2.5 0 0 0 8 0zM6.5 2.5a1.5 1.5 0 1 1 3 0v7.987l.167.15a2.5 2.5 0 1 1-3.333 0l.166-.15V2.5z"/>
-                                            </svg> """ + str(temp) + """&#176;C</td>
+                                            </svg> """ + str(round(temp-273.15)) + """&#176;C</td>
                                             <td > <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wind" viewBox="0 0 16 16">
                                                 <path d="M12.5 2A2.5 2.5 0 0 0 10 4.5a.5.5 0 0 1-1 0A3.5 3.5 0 1 1 12.5 8H.5a.5.5 0 0 1 0-1h12a2.5 2.5 0 0 0 0-5zm-7 1a1 1 0 0 0-1 1 .5.5 0 0 1-1 0 2 2 0 1 1 2 2h-5a.5.5 0 0 1 0-1h5a1 1 0 0 0 0-2zM0 9.5A.5.5 0 0 1 .5 9h10.042a3 3 0 1 1-3 3 .5.5 0 0 1 1 0 2 2 0 1 0 2-2H.5a.5.5 0 0 1-.5-.5z"/>
                                             </svg> """ + str(wind) + """m/s</td>
@@ -371,7 +369,7 @@ def convertotimg(txt):
         'POST',
         'https://api.pspdfkit.com/build',
         headers={
-            'Authorization': 'Bearer ' + os.environ["CONVKEY"][2:]
+            'Authorization': "'Bearer  " + keyconvert + "'"
         },
         files={
             'document': open(os.path.abspath(app.static_folder + "/" + txt+".html"), 'rb')
