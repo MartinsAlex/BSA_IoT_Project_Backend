@@ -13,10 +13,12 @@ LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
 
 owmcredits = os.environ["OWMKEY"]
+print(owmcredits)
 
 @app.route("/")
 def hello(name=None):
-    return render_template('base.html', name=name)
+    key = owmcredits
+    return render_template('base.html', name=name, key = key)
 
 
 @app.route("/forecast/")
