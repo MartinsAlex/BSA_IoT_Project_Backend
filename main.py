@@ -1,13 +1,10 @@
 import os
-from socket import AddressFamily
-from sqlite3 import adapt
 import sys
 import requests
 import json
 
 from flask import Flask, make_response, send_file, send_from_directory
 from flask import render_template
-from PIL import Image, ImageDraw, ImageFont
 
 app = Flask(__name__, static_folder='files')
 

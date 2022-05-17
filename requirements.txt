@@ -1,7 +1,6 @@
 flask
 requests
 datetime
-PIL
 sys
 json
 os
