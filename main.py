@@ -2,7 +2,7 @@ import os
 import sys
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import Flask, make_response, send_file, send_from_directory
 from flask import render_template
@@ -226,7 +226,7 @@ def createhtmlcurrent(current, pollution):
                                 <div class="card bg-light mx-auto">
                                     <div class="card-body">
                                         <h1 class="display-3" style="text-align: center; margin-bottom: 20px;">Current Weather</h1>
-                                        <h1 class="clock">""" + datetime.now().strftime("%H:%M") + """</h1>
+                                        <h1 class="clock">""" + (datetime.now() + timedelta(hours=2)).strftime("%H:%M")  + """</h1>
                                         <h2>Location : <b style="color : darkblue;">Lausanne (CH)</b> </h2>
                                         
                                         <h4>Long : <i style="color : darkblue;">""" + str(LAUSANNE_LONGITUDE) + """</i><br>Lat : <i style="color : darkblue;">""" + str(LAUSANNE_LATITUDE) + """</i></h4>
