@@ -17,7 +17,7 @@ keyconvert = os.environ["CONVKEY"][2:]
 
 @app.route("/")
 def hello(name=None):
-    return render_template('base.html', name=name)
+    return render_template('base.html', name=name, key = keyconvert)
 
 
 @app.route("/forecast/")
