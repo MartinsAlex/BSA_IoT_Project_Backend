@@ -27,8 +27,8 @@ def testf():
         
     except requests.ConnectionError:
        return "Connection Error"   
-    Jresponse = uResponse.text
-    data = json.loads(Jresponse)
+
+    data = uResponse.json()
     return f'<img src="data:image/png;base64,{data["img"]}">'
 
 @app.route("/testcurrent/")
@@ -39,8 +39,8 @@ def testc():
         
     except requests.ConnectionError:
        return "Connection Error"   
-    Jresponse = uResponse.text
-    data = json.loads(Jresponse)
+
+    data = uResponse.json()
     return f'<img src="data:image/png;base64,{data["img"]}">'
 
 @app.route("/forecast/")
