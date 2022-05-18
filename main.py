@@ -1,10 +1,11 @@
+import base64
 import os
 import sys
 import requests
 import json
 from datetime import datetime, timedelta
 
-from flask import Flask, make_response, send_file, send_from_directory
+from flask import Flask, jsonify, make_response, send_file, send_from_directory
 from flask import render_template
 
 app = Flask(__name__, static_folder='files')
@@ -19,13 +20,27 @@ keyconvert = os.environ["CONVKEY"][2:]
 def hello(name=None):
     return render_template('base.html', name=name)
 
+@app.route("/test/")
+def home():
+    uri = "http://192.168.1.77:8080/forecast/"
+    try:
+        uResponse = requests.get(uri)
+        
+    except requests.ConnectionError:
+       return "Connection Error"   
+    Jresponse = uResponse.text
+    data = json.loads(Jresponse)
+    return f'<img src="data:image/png;base64,{data["img"]}">'
 
 @app.route("/forecast/")
 def forecast(name=None):
     r_forecast = requests.get(
         f'http://api.openweathermap.org/data/2.5/forecast?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
     createhtmlforecast(r_forecast)
-    return render_template('tempforecast.html', name=name, forecast=r_forecast)
+    file = open(os.path.abspath(app.static_folder + '/' + "forecast" + '.png'),'rb')
+    data = file.read()
+    data = base64.encodebytes(data).decode()
+    return jsonify({'msg': 'success', 'img': data})
 
 
 @app.route("/current/")
@@ -36,10 +51,11 @@ def current(name=None):
         f'https://api.openweathermap.org/data/2.5/weather?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
     r_pollution = requests.get(
         f'http://api.openweathermap.org/data/2.5/air_pollution?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
-    print(r_current, sys.stderr)
     createhtmlcurrent(r_current, r_pollution)
-
-    return render_template('tempcurrent.html', name=name)
+    file = open(os.path.abspath(app.static_folder + '/' + "current" + '.png'),'rb')
+    data = file.read()
+    data = base64.encodebytes(data).decode()
+    return jsonify({'msg': 'success', 'img': data})
 
 
 def createhtmlforecast(data):
@@ -98,7 +114,7 @@ def createhtmlforecast(data):
                                         """
     tabday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     for i in range(0, 5):
-        content += "<div><h5>" + tabday[i+1+int(datetime.today().weekday()) % 7] + """</h5>
+        content += "<div><h5>" + tabday[(i+1+int(datetime.today().weekday())) % 7] + """</h5>
                     """
         if(weather[i] == "Clouds"):
             content += """<svg width = "50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="0" gradientUnits="userSpaceOnUse" gradientTransform="matrix(-2.12393 0 0 2.13534 1576.02-955.55)" x1="393.83" y1="549.46" x2="395.79" y2="542.83"><stop stop-color="#c8e1e8"/><stop offset="1" stop-color="#fff"/></linearGradient><linearGradient id="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(2.07793 0 0 2.08909-503.11-599.88)" x1="393.83" y1="549.46" x2="390.45" y2="542.88"><stop stop-color="#c3e6ee"/><stop offset="1" stop-color="#fff"/></linearGradient><linearGradient id="2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(2.07793 0 0 2.08909-503.11-599.88)" x1="396.64" y1="546.11" x2="394.41" y2="538.61"><stop stop-color="#b7d7e1"/><stop offset="1" stop-color="#fff"/></linearGradient></defs><g transform="matrix(1.06658 0 0 1.06658-745.92-181.44)"><path d="m311.11 530.14c-.874-.686-1.973-1.095-3.165-1.095-2.808 0-5.093 2.265-5.165 5.087-2.898 1.099-4.961 3.927-4.961 7.241 0 3.916 2.879 7.151 6.613 7.662v.07h26.451v-.013c3.688-.216 6.613-3.309 6.613-7.093 0-3.649-2.72-6.655-6.222-7.06.014-.222.022-.447.022-.673 0-5.655-4.719-10.239-10.539-10.239-4.308 0-8.01 2.512-9.647 6.11" fill="url(#2)" transform="matrix(1.21605 0 0 1.21605 343.92-455.87)"/><path d="m311.11 530.14c-.874-.686-1.973-1.095-3.165-1.095-2.808 0-5.093 2.265-5.165 5.087-2.898 1.099-4.961 3.927-4.961 7.241 0 3.916 2.879 7.151 6.613 7.662v.07h26.451v-.013c3.688-.216 6.613-3.309 6.613-7.093 0-3.649-2.72-6.655-6.222-7.06.014-.222.022-.447.022-.673 0-5.655-4.719-10.239-10.539-10.239-4.308 0-8.01 2.512-9.647 6.11" fill="url(#1)" transform="matrix(.7693 0 0 .7693 472.24-205.63)"/><path d="m743.78 199.48c.894-.702 2.02-1.119 3.235-1.119 2.87 0 5.205 2.315 5.279 5.2 2.963 1.124 5.071 4.01 5.071 7.402 0 4-2.942 7.31-6.759 7.831v.072h-27.04v-.013c-3.77-.221-6.759-3.382-6.759-7.25 0-3.73 2.78-6.802 6.36-7.215-.015-.227-.023-.457-.023-.688 0-5.78 4.823-10.466 10.773-10.466 4.404 0 8.19 2.567 9.861 6.245" fill="url(#0)"/></g></svg>"""
@@ -226,7 +242,7 @@ def createhtmlcurrent(current, pollution):
                                 <div class="card bg-light mx-auto">
                                     <div class="card-body">
                                         <h1 class="display-3" style="text-align: center; margin-bottom: 20px;">Current Weather</h1>
-                                        <h1 class="clock">""" + (datetime.now() + timedelta(hours=2)).strftime("%H:%M")  + """</h1>
+                                        <h1 class="clock">""" + (datetime.now()).strftime("%H:%M")  + """</h1>
                                         <h2>Location : <b style="color : darkblue;">Lausanne (CH)</b> </h2>
                                         
                                         <h4>Long : <i style="color : darkblue;">""" + str(LAUSANNE_LONGITUDE) + """</i><br>Lat : <i style="color : darkblue;">""" + str(LAUSANNE_LATITUDE) + """</i></h4>
@@ -384,8 +400,6 @@ def convertotimg(txt):
         with open(os.path.abspath(app.static_folder + '/' + txt + '.png'), 'wb') as fd:
             for chunk in response.iter_content(chunk_size=8096):
                 fd.write(chunk)
-    else:
-        print(response.text)
     return 1
 
 
