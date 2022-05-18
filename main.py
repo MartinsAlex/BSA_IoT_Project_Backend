@@ -21,7 +21,7 @@ def hello(name=None):
 
 @app.route("/testforecast/")
 def testf():
-    uri = "https://bsaflaskapp-mdefaecyva-uc.a.run.app/forecast/"
+    uri = "https://bsaflaskapp-mdefaecyva-oa.a.run.app/forecast/"
     try:
         uResponse = requests.get(uri)
         
@@ -33,7 +33,7 @@ def testf():
 
 @app.route("/testcurrent/")
 def testc():
-    uri = "https://bsaflaskapp-mdefaecyva-uc.a.run.app/current/"
+    uri = "https://bsaflaskapp-mdefaecyva-oa.a.run.app/current/"
     try:
         uResponse = requests.get(uri)
         
