@@ -20,9 +20,21 @@ keyconvert = os.environ["CONVKEY"][2:]
 def hello(name=None):
     return render_template('base.html', name=name)
 
-@app.route("/test/")
-def home():
-    uri = "http://192.168.1.77:8080/forecast/"
+@app.route("/testforecast/")
+def testf():
+    uri = "https://bsaflaskapp-mdefaecyva-uc.a.run.app/forecast/"
+    try:
+        uResponse = requests.get(uri)
+        
+    except requests.ConnectionError:
+       return "Connection Error"   
+    Jresponse = uResponse.text
+    data = json.loads(Jresponse)
+    return f'<img src="data:image/png;base64,{data["img"]}">'
+
+@app.route("/testcurrent/")
+def testc():
+    uri = "https://bsaflaskapp-mdefaecyva-uc.a.run.app/current/"
     try:
         uResponse = requests.get(uri)
         
