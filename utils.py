@@ -139,7 +139,7 @@ def createhtmlforecast(data):
 
 
 def createhtmlcurrent(current, pollution):
-    if current["weather"] and pollution["list"]:
+    if (len(current["weather"]) > 0) and (len(pollution["list"]) > 0):
         no2 = float(pollution["list"][0]["components"]["no2"])
         pm10 = float(pollution["list"][0]["components"]["pm10"])
         o3 = float(pollution["list"][0]["components"]["o3"])
