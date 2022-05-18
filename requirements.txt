@@ -1,4 +1,3 @@
 flask
-base64
 requests
 gunicorn==20.1.0
