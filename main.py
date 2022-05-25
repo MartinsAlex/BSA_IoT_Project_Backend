@@ -13,6 +13,7 @@ LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
 
 OWM_KEY = os.environ["OWMKEY"][2:]
+keyconvert = os.environ["CONVKEY"][2:]
 
 
 @app.route("/")
