@@ -1,20 +1,19 @@
 import base64
 import os
-import sys
 import requests
 import json
-from datetime import datetime, timedelta
 
-from flask import Flask, jsonify, make_response, send_file, send_from_directory
+from flask import Flask, jsonify
 from flask import render_template
+from utils import createhtmlcurrent, createhtmlforecast
 
 app = Flask(__name__, static_folder='files')
 
 LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
 
-owmcredits = os.environ["OWMKEY"][2:]
-keyconvert = os.environ["CONVKEY"][2:]
+OWM_KEY = os.environ["OWMKEY"][2:]
+
 
 @app.route("/")
 def hello(name=None):
@@ -22,32 +21,32 @@ def hello(name=None):
 
 @app.route("/testforecast/")
 def testf():
-    uri = "https://bsaflaskapp-mdefaecyva-uc.a.run.app/forecast/"
+    uri = "https://bsaflaskapp-mdefaecyva-oa.a.run.app/forecast/"
     try:
         uResponse = requests.get(uri)
         
     except requests.ConnectionError:
        return "Connection Error"   
-    Jresponse = uResponse.text
-    data = json.loads(Jresponse)
+
+    data = uResponse.json()
     return f'<img src="data:image/png;base64,{data["img"]}">'
 
 @app.route("/testcurrent/")
 def testc():
-    uri = "https://bsaflaskapp-mdefaecyva-uc.a.run.app/current/"
+    uri = "https://bsaflaskapp-mdefaecyva-oa.a.run.app/current/"
     try:
         uResponse = requests.get(uri)
         
     except requests.ConnectionError:
        return "Connection Error"   
-    Jresponse = uResponse.text
-    data = json.loads(Jresponse)
+
+    data = uResponse.json()
     return f'<img src="data:image/png;base64,{data["img"]}">'
 
 @app.route("/forecast/")
-def forecast(name=None):
+def forecast():
     r_forecast = requests.get(
-        f'http://api.openweathermap.org/data/2.5/forecast?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
+        f'https://api.openweathermap.org/data/2.5/forecast?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={OWM_KEY}').json()
     createhtmlforecast(r_forecast)
     file = open(os.path.abspath(app.static_folder + '/' + "forecast" + '.png'),'rb')
     data = file.read()
@@ -56,13 +55,14 @@ def forecast(name=None):
 
 
 @app.route("/current/")
-def current(name=None):
-    LAUSANNE_LATITUDE = 46.52751093142267
-    LAUSANNE_LONGITUDE = 6.626519003698495
+def current():
     r_current = requests.get(
-        f'https://api.openweathermap.org/data/2.5/weather?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
+        f'https://api.openweathermap.org/data/2.5/weather?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={OWM_KEY}').json()
     r_pollution = requests.get(
-        f'http://api.openweathermap.org/data/2.5/air_pollution?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={owmcredits}').json()
+        f'https://api.openweathermap.org/data/2.5/air_pollution?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={OWM_KEY}').json()
+
+    print(r_current, r_pollution)
+
     createhtmlcurrent(r_current, r_pollution)
     file = open(os.path.abspath(app.static_folder + '/' + "current" + '.png'),'rb')
     data = file.read()
@@ -70,6 +70,7 @@ def current(name=None):
     return jsonify({'msg': 'success', 'img': data})
 
 
+<<<<<<< HEAD
 def createhtmlforecast(data):
     weather = []
     temp = []
@@ -413,6 +414,8 @@ def convertotimg(txt):
                 fd.write(chunk)
     return 1
 
+=======
+>>>>>>> dd3781bcdb1076d0afb94448fca154e1106c8d31
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
