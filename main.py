@@ -79,7 +79,7 @@ def createhtmlforecast(data):
     humidity = []
     wind = []
     for elem in data["list"]:
-        if(elem["dt_txt"].split(" ")[1] == "18:00:00"):
+        if(elem["dt_txt"].split(" ")[1] == "15:00:00"):
             weather.append(elem["weather"][0]["main"])
             temp.append(elem["main"]["temp"])
             pressure.append(elem["main"]["pressure"])
