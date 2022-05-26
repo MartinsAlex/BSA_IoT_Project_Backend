@@ -5,3 +5,4 @@ pandas
 google-cloud-aiplatform
 google-cloud-bigquery[bqstorage,pandas]
 pyarrow
+protobuf==3.18.1
