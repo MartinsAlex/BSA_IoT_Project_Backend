@@ -14,8 +14,6 @@ app = Flask(__name__, static_folder='files')
 LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
 
-os['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.abspath(app.static_folder + '/' + "unilbigscaleanalytics-b72696310700.json")
-
 
 OWM_KEY = os.environ["OWMKEY"][2:]
 keyconvert = os.environ["CONVKEY"][2:]
