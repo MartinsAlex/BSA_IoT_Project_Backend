@@ -14,6 +14,8 @@ app = Flask(__name__, static_folder='files')
 LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
 
+BIG_QUERY_CLIENT = bigquery.Client()
+
 OWM_KEY = os.environ["OWMKEY"][2:]
 keyconvert = os.environ["CONVKEY"][2:]
 
@@ -75,7 +77,7 @@ def current():
 
 @app.route("/predict/")
 def predict_indoor_air_quality():
-    client = bigquery.Client()
+
 
     query_string = """
         SELECT * FROM `unilbigscaleanalytics.IoT_Project.bme680`
@@ -84,7 +86,7 @@ def predict_indoor_air_quality():
     """
 
     df = (
-        client.query(query_string)
+        BIG_QUERY_CLIENT.query(query_string)
             .result()
             .to_dataframe(
             # Optionally, explicitly request to use the BigQuery Storage API. As of
