@@ -13,7 +13,7 @@ COPY . ./
 
 ENV OWMKEY = "c6bbb95008347076780b7ce4a89f2224"
 ENV CONVKEY = "pdf_live_7ILHvV0lP5RrWGfQgR3gVGPjIudDHKzdilplzK3SQNS"
-ENV GOOGLE_APPLICATION_CREDENTIALS = "unilbigscaleanalytics-b72696310700.json"
+#ENV GOOGLE_APPLICATION_CREDENTIALS = "unilbigscaleanalytics-b72696310700.json"
 
 # Install production dependencies.
 RUN pip install --upgrade pip
