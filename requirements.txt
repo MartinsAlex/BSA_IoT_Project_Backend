@@ -1,3 +1,7 @@
 flask
 requests
 gunicorn==20.1.0
+pandas
+google-cloud-aiplatform
+google-cloud-bigquery[bqstorage,pandas]
+pyarrow

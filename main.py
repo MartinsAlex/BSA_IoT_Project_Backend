@@ -6,7 +6,8 @@ import datetime
 
 from flask import Flask, jsonify
 from flask import render_template
-from utils import createhtmlcurrent, createhtmlforecast
+from utils import createhtmlcurrent, createhtmlforecast, predict_tabular_regression_sample
+from google.cloud import bigquery
 
 app = Flask(__name__, static_folder='files')
 
@@ -21,6 +22,7 @@ keyconvert = os.environ["CONVKEY"][2:]
 def hello(name=None):
     return render_template('base.html', name=name)
 
+"""
 @app.route("/testforecast/")
 def testf():
     uri = "https://bsaflaskapp-mdefaecyva-oa.a.run.app/forecast/"
@@ -44,7 +46,7 @@ def testc():
 
     data = uResponse.json()
     return f'<img src="data:image/png;base64,{data["img"]}">'
-
+"""
 @app.route("/forecast/")
 def forecast():
     r_forecast = requests.get(
@@ -70,6 +72,57 @@ def current():
     data = file.read()
     data = base64.encodebytes(data).decode()
     return jsonify({'msg': 'success', 'img': data})
+
+@app.route("/predict/")
+def predict_indoor_air_quality():
+    client = bigquery.Client()
+
+    query_string = """
+        SELECT * FROM `unilbigscaleanalytics.IoT_Project.bme680`
+        ORDER BY `timestamp` DESC
+        LIMIT 3000
+    """
+
+    df = (
+        client.query(query_string)
+            .result()
+            .to_dataframe(
+            # Optionally, explicitly request to use the BigQuery Storage API. As of
+            # google-cloud-bigquery version 1.26.0 and above, the BigQuery Storage
+            # API is used by default.
+            create_bqstorage_client=True,
+        )
+    )
+
+    df['outdoor_temperature_avg_10_min'] = df['outdoor_temperature'].rolling(window=10).mean()
+    df['outdoor_humidity_avg_10_min'] = df['outdoor_humidity'].rolling(window=10).mean()
+    df['outdoor_air_quality_avg_10_min'] = df['outdoor_air_quality'].rolling(window=10).mean()
+
+    df['outdoor_temperature_avg_1_hour'] = df['outdoor_temperature'].rolling(window=60).mean()
+    df['outdoor_humidity_avg_1_hour'] = df['outdoor_humidity'].rolling(window=60).mean()
+    df['outdoor_air_quality_avg_1_hour'] = df['outdoor_air_quality'].rolling(window=60).mean()
+
+    df['outdoor_temperature_avg_1_day'] = df['outdoor_temperature'].rolling(window=1440).mean()
+    df['outdoor_humidity_avg_1_day'] = df['outdoor_humidity'].rolling(window=1440).mean()
+    df['outdoor_air_quality_avg_1_day'] = df['outdoor_air_quality'].rolling(window=1440).mean()
+
+    df = df.iloc[1440:]
+
+    ENDPOINT_ID = "7435759644137488384"
+    PROJECT_ID = "456026096583"
+    LOCATION = "europe-west6"
+
+    instances = [{col: str(df[col].iloc[0]) for col in df.columns}]
+
+    prediction = predict_tabular_regression_sample(
+        project=PROJECT_ID,
+        endpoint_name=ENDPOINT_ID,
+        location=LOCATION,
+        instances=instances
+    )
+
+    return jsonify(prediction)
+
 
 
 def createhtmlforecast(data):

@@ -17,6 +17,7 @@ ENV GOOGLE_APPLICATION_CREDENTIALS = "unilbigscaleanalytics-b72696310700.json"
 
 # Install production dependencies.
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade 'google-cloud-bigquery[bqstorage,pandas]'
 
 # Run the web service on container startup. Here we use the gunicorn
 # webserver, with one worker process and 8 threads.

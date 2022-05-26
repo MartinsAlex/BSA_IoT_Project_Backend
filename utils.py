@@ -4,6 +4,8 @@ from flask import current_app
 import json
 import datetime as dt
 from datetime import timezone
+from google.cloud import aiplatform
+from typing import List, Dict
 
 LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
@@ -354,3 +356,21 @@ def createhtmlcurrent(current, pollution):
         file.write(content)
         file.close()
         convert_to_img("current")
+
+
+def predict_tabular_regression_sample(
+        project: str,
+        location: str,
+        endpoint_name: str,
+        instances: List[Dict],
+):
+    aiplatform.init(project=project, location=location)
+
+    endpoint = aiplatform.Endpoint(endpoint_name)
+
+    response = endpoint.predict(instances=instances)
+
+    for prediction_ in response.predictions:
+        return prediction_
+
+
