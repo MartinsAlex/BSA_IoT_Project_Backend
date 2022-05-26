@@ -14,7 +14,7 @@ app = Flask(__name__, static_folder='files')
 LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
 
-BIG_QUERY_CLIENT = bigquery.Client()
+#os['GOOGLE_APPLICATION_CREDENTIALS'] = "unilbigscaleanalytics-b72696310700.json"
 
 OWM_KEY = os.environ["OWMKEY"][2:]
 keyconvert = os.environ["CONVKEY"][2:]
@@ -78,6 +78,7 @@ def current():
 @app.route("/predict/")
 def predict_indoor_air_quality():
 
+    BIG_QUERY_CLIENT = bigquery.Client()
 
     query_string = """
         SELECT * FROM `unilbigscaleanalytics.IoT_Project.bme680`
