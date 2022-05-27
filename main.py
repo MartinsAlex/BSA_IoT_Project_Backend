@@ -123,7 +123,7 @@ def predict_indoor_air_quality():
         instances=instances
     )
 
-    return jsonify(prediction)
+    return jsonify(json.loads(prediction))
 
 
 
