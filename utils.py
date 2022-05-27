@@ -7,19 +7,19 @@ from datetime import timezone
 from google.cloud import aiplatform
 from typing import List, Dict
 
-LAUSANNE_LATITUDE = 46.52751093142267
+LAUSANNE_LATITUDE = 46.52751093142267 #global variables with lausanne geographical values
 LAUSANNE_LONGITUDE = 6.626519003698495
 
-def convert_to_img(txt):
+def convert_to_img(txt): #function to convert html files (passed as string) to png
     instructions = {
         'parts': [
             {
-                'html': 'document'
+                'html': 'document' #define type of document to convert
             }
         ],
         "output": {
             "type": "image",
-            "format": "png",
+            "format": "png", #define return format
             "width": 1024
         }
     }
@@ -28,10 +28,10 @@ def convert_to_img(txt):
         'POST',
         'https://api.pspdfkit.com/build',
         headers={
-            'Authorization': 'Bearer ' + os.environ["CONVKEY"][2:]
+            'Authorization': 'Bearer ' + os.environ["CONVKEY"][2:] #add key stored in OS
         },
         files={
-            'document': open(os.path.abspath(current_app.static_folder + "/" + txt+".html"), 'rb')
+            'document': open(os.path.abspath(current_app.static_folder + "/" + txt+".html"), 'rb') #read html file to convert
         },
         data={
             'instructions': json.dumps(instructions)
@@ -40,28 +40,29 @@ def convert_to_img(txt):
     )
 
     if response.ok:
-        with open(os.path.abspath(current_app.static_folder + '/' + txt + '.png'), 'wb') as fd:
-            for chunk in response.iter_content(chunk_size=8096):
+        with open(os.path.abspath(current_app.static_folder + '/' + txt + '.png'), 'wb') as fd: #store returned file as png
+            for chunk in response.iter_content(chunk_size=8096): #safe chunk size to convert without loss
                 fd.write(chunk)
     return 1
 
 
-def createhtmlforecast(data):
+def createhtmlforecast(data): #creation of the forecast html file
     if data["list"]:
         weather = []
         temp = []
         pressure = []
         humidity = []
         wind = []
-        for elem in data["list"]:
-            if (elem["dt_txt"].split(" ")[1] == "12:00:00"):
+        for elem in data["list"]: #for each elem of the json returned by OWM
+            if (elem["dt_txt"].split(" ")[1] == "15:00:00"): #take values at 15:00:00
+                #store all values for each days
                 weather.append(elem["weather"][0]["main"])
                 temp.append(elem["main"]["temp"])
                 pressure.append(elem["main"]["pressure"])
                 humidity.append(elem["main"]["humidity"])
                 wind.append(elem["wind"]["speed"])
-
-        content = """
+        #create HTML to return
+        content = """ 
             <!DOCTYPE html>
             <html lang="en" class="h-100">
     
@@ -105,7 +106,7 @@ def createhtmlforecast(data):
         for i in range(0, 5):
             content += "<div><h5>" + tabday[(i + 1 + int(dt.datetime.today().replace(tzinfo=timezone.utc).weekday())) % 7] + """</h5>
                         """
-            if (weather[i] == "Clouds"):
+            if (weather[i] == "Clouds"):#create svg of weather depending on values
                 content += """<svg width = "50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="0" gradientUnits="userSpaceOnUse" gradientTransform="matrix(-2.12393 0 0 2.13534 1576.02-955.55)" x1="393.83" y1="549.46" x2="395.79" y2="542.83"><stop stop-color="#c8e1e8"/><stop offset="1" stop-color="#fff"/></linearGradient><linearGradient id="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(2.07793 0 0 2.08909-503.11-599.88)" x1="393.83" y1="549.46" x2="390.45" y2="542.88"><stop stop-color="#c3e6ee"/><stop offset="1" stop-color="#fff"/></linearGradient><linearGradient id="2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(2.07793 0 0 2.08909-503.11-599.88)" x1="396.64" y1="546.11" x2="394.41" y2="538.61"><stop stop-color="#b7d7e1"/><stop offset="1" stop-color="#fff"/></linearGradient></defs><g transform="matrix(1.06658 0 0 1.06658-745.92-181.44)"><path d="m311.11 530.14c-.874-.686-1.973-1.095-3.165-1.095-2.808 0-5.093 2.265-5.165 5.087-2.898 1.099-4.961 3.927-4.961 7.241 0 3.916 2.879 7.151 6.613 7.662v.07h26.451v-.013c3.688-.216 6.613-3.309 6.613-7.093 0-3.649-2.72-6.655-6.222-7.06.014-.222.022-.447.022-.673 0-5.655-4.719-10.239-10.539-10.239-4.308 0-8.01 2.512-9.647 6.11" fill="url(#2)" transform="matrix(1.21605 0 0 1.21605 343.92-455.87)"/><path d="m311.11 530.14c-.874-.686-1.973-1.095-3.165-1.095-2.808 0-5.093 2.265-5.165 5.087-2.898 1.099-4.961 3.927-4.961 7.241 0 3.916 2.879 7.151 6.613 7.662v.07h26.451v-.013c3.688-.216 6.613-3.309 6.613-7.093 0-3.649-2.72-6.655-6.222-7.06.014-.222.022-.447.022-.673 0-5.655-4.719-10.239-10.539-10.239-4.308 0-8.01 2.512-9.647 6.11" fill="url(#1)" transform="matrix(.7693 0 0 .7693 472.24-205.63)"/><path d="m743.78 199.48c.894-.702 2.02-1.119 3.235-1.119 2.87 0 5.205 2.315 5.279 5.2 2.963 1.124 5.071 4.01 5.071 7.402 0 4-2.942 7.31-6.759 7.831v.072h-27.04v-.013c-3.77-.221-6.759-3.382-6.759-7.25 0-3.73 2.78-6.802 6.36-7.215-.015-.227-.023-.457-.023-.688 0-5.78 4.823-10.466 10.773-10.466 4.404 0 8.19 2.567 9.861 6.245" fill="url(#0)"/></g></svg>"""
             elif (weather[i] == "Clear"):
                 content += """<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 122.88" width="50px"><defs><style>.cls-1{fill:#fcdb33;}</style></defs><title>sun-color</title><path class="cls-1" d="M30,13.21A3.93,3.93,0,1,1,36.8,9.27L41.86,18A3.94,3.94,0,1,1,35.05,22L30,13.21Zm31.45,13A35.23,35.23,0,1,1,36.52,36.52,35.13,35.13,0,0,1,61.44,26.2ZM58.31,4A3.95,3.95,0,1,1,66.2,4V14.06a3.95,3.95,0,1,1-7.89,0V4ZM87.49,10.1A3.93,3.93,0,1,1,94.3,14l-5.06,8.76a3.93,3.93,0,1,1-6.81-3.92l5.06-8.75ZM109.67,30a3.93,3.93,0,1,1,3.94,6.81l-8.75,5.06a3.94,3.94,0,1,1-4-6.81L109.67,30Zm9.26,28.32a3.95,3.95,0,1,1,0,7.89H108.82a3.95,3.95,0,1,1,0-7.89Zm-6.15,29.18a3.93,3.93,0,1,1-3.91,6.81l-8.76-5.06A3.93,3.93,0,1,1,104,82.43l8.75,5.06ZM92.89,109.67a3.93,3.93,0,1,1-6.81,3.94L81,104.86a3.94,3.94,0,0,1,6.81-4l5.06,8.76Zm-28.32,9.26a3.95,3.95,0,1,1-7.89,0V108.82a3.95,3.95,0,1,1,7.89,0v10.11Zm-29.18-6.15a3.93,3.93,0,0,1-6.81-3.91l5.06-8.76A3.93,3.93,0,1,1,40.45,104l-5.06,8.75ZM13.21,92.89a3.93,3.93,0,1,1-3.94-6.81L18,81A3.94,3.94,0,1,1,22,87.83l-8.76,5.06ZM4,64.57a3.95,3.95,0,1,1,0-7.89H14.06a3.95,3.95,0,1,1,0,7.89ZM10.1,35.39A3.93,3.93,0,1,1,14,28.58l8.76,5.06a3.93,3.93,0,1,1-3.92,6.81L10.1,35.39Z"></path></svg>"""
@@ -134,14 +135,15 @@ def createhtmlforecast(data):
         </html>
         """
 
-        file = open(os.path.abspath(current_app.static_folder + "/forecast.html"), "w")
+        file = open(os.path.abspath(current_app.static_folder + "/forecast.html"), "w") #store HTML file
         file.write(content)
         file.close()
-        convert_to_img("forecast")
+        convert_to_img("forecast") #convert html to image
 
 
 def createhtmlcurrent(current, pollution):
     if (len(current["weather"]) > 0) and (len(pollution["list"]) > 0):
+        #store all datas relating to weather and pollution
         no2 = float(pollution["list"][0]["components"]["no2"])
         pm10 = float(pollution["list"][0]["components"]["pm10"])
         o3 = float(pollution["list"][0]["components"]["o3"])
@@ -155,10 +157,10 @@ def createhtmlcurrent(current, pollution):
         no2_max = 400
         o3_max = 240
         pm2_5_max = 110
-
+        #calculate air quality
         air_quality_index = ((1 - pm10 / pm10_max) + (1 - no2 / no2_max) +
                              (1 - o3 / o3_max) + (1 - pm25 / pm2_5_max)) / 4
-
+        #create HTML
         content = """
     
         <!DOCTYPE html>
@@ -238,7 +240,7 @@ def createhtmlcurrent(current, pollution):
                                             <h4>Long : <i style="color : darkblue;">""" + str(
             LAUSANNE_LONGITUDE) + """</i><br>Lat : <i style="color : darkblue;">""" + str(LAUSANNE_LATITUDE) + """</i></h4>
                                             <h3 style = "margin-bottom: 10px; margin-top: 10px;">Weather : """
-        if (weather == "Clouds"):
+        if (weather == "Clouds"):#test weather's value to display svg
             content += """<svg width = "150" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="0" gradientUnits="userSpaceOnUse" gradientTransform="matrix(-2.12393 0 0 2.13534 1576.02-955.55)" x1="393.83" y1="549.46" x2="395.79" y2="542.83"><stop stop-color="#c8e1e8"/><stop offset="1" stop-color="#fff"/></linearGradient><linearGradient id="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(2.07793 0 0 2.08909-503.11-599.88)" x1="393.83" y1="549.46" x2="390.45" y2="542.88"><stop stop-color="#c3e6ee"/><stop offset="1" stop-color="#fff"/></linearGradient><linearGradient id="2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(2.07793 0 0 2.08909-503.11-599.88)" x1="396.64" y1="546.11" x2="394.41" y2="538.61"><stop stop-color="#b7d7e1"/><stop offset="1" stop-color="#fff"/></linearGradient></defs><g transform="matrix(1.06658 0 0 1.06658-745.92-181.44)"><path d="m311.11 530.14c-.874-.686-1.973-1.095-3.165-1.095-2.808 0-5.093 2.265-5.165 5.087-2.898 1.099-4.961 3.927-4.961 7.241 0 3.916 2.879 7.151 6.613 7.662v.07h26.451v-.013c3.688-.216 6.613-3.309 6.613-7.093 0-3.649-2.72-6.655-6.222-7.06.014-.222.022-.447.022-.673 0-5.655-4.719-10.239-10.539-10.239-4.308 0-8.01 2.512-9.647 6.11" fill="url(#2)" transform="matrix(1.21605 0 0 1.21605 343.92-455.87)"/><path d="m311.11 530.14c-.874-.686-1.973-1.095-3.165-1.095-2.808 0-5.093 2.265-5.165 5.087-2.898 1.099-4.961 3.927-4.961 7.241 0 3.916 2.879 7.151 6.613 7.662v.07h26.451v-.013c3.688-.216 6.613-3.309 6.613-7.093 0-3.649-2.72-6.655-6.222-7.06.014-.222.022-.447.022-.673 0-5.655-4.719-10.239-10.539-10.239-4.308 0-8.01 2.512-9.647 6.11" fill="url(#1)" transform="matrix(.7693 0 0 .7693 472.24-205.63)"/><path d="m743.78 199.48c.894-.702 2.02-1.119 3.235-1.119 2.87 0 5.205 2.315 5.279 5.2 2.963 1.124 5.071 4.01 5.071 7.402 0 4-2.942 7.31-6.759 7.831v.072h-27.04v-.013c-3.77-.221-6.759-3.382-6.759-7.25 0-3.73 2.78-6.802 6.36-7.215-.015-.227-.023-.457-.023-.688 0-5.78 4.823-10.466 10.773-10.466 4.404 0 8.19 2.567 9.861 6.245" fill="url(#0)"/></g></svg>"""
         elif (weather == "Clear"):
             content += """<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 122.88" width="150px"><defs><style>.cls-1{fill:#fcdb33;}</style></defs><title>sun-color</title><path class="cls-1" d="M30,13.21A3.93,3.93,0,1,1,36.8,9.27L41.86,18A3.94,3.94,0,1,1,35.05,22L30,13.21Zm31.45,13A35.23,35.23,0,1,1,36.52,36.52,35.13,35.13,0,0,1,61.44,26.2ZM58.31,4A3.95,3.95,0,1,1,66.2,4V14.06a3.95,3.95,0,1,1-7.89,0V4ZM87.49,10.1A3.93,3.93,0,1,1,94.3,14l-5.06,8.76a3.93,3.93,0,1,1-6.81-3.92l5.06-8.75ZM109.67,30a3.93,3.93,0,1,1,3.94,6.81l-8.75,5.06a3.94,3.94,0,1,1-4-6.81L109.67,30Zm9.26,28.32a3.95,3.95,0,1,1,0,7.89H108.82a3.95,3.95,0,1,1,0-7.89Zm-6.15,29.18a3.93,3.93,0,1,1-3.91,6.81l-8.76-5.06A3.93,3.93,0,1,1,104,82.43l8.75,5.06ZM92.89,109.67a3.93,3.93,0,1,1-6.81,3.94L81,104.86a3.94,3.94,0,0,1,6.81-4l5.06,8.76Zm-28.32,9.26a3.95,3.95,0,1,1-7.89,0V108.82a3.95,3.95,0,1,1,7.89,0v10.11Zm-29.18-6.15a3.93,3.93,0,0,1-6.81-3.91l5.06-8.76A3.93,3.93,0,1,1,40.45,104l-5.06,8.75ZM13.21,92.89a3.93,3.93,0,1,1-3.94-6.81L18,81A3.94,3.94,0,1,1,22,87.83l-8.76,5.06ZM4,64.57a3.95,3.95,0,1,1,0-7.89H14.06a3.95,3.95,0,1,1,0,7.89ZM10.1,35.39A3.93,3.93,0,1,1,14,28.58l8.76,5.06a3.93,3.93,0,1,1-3.92,6.81L10.1,35.39Z"></path></svg>"""
@@ -272,7 +274,7 @@ def createhtmlcurrent(current, pollution):
                                                 <th>PM<sub>25</sub></th>
                                                 <tr>"""
 
-        for x in range(0, 4):
+        for x in range(0, 4): #for each air component, print the label corresponding to their value
             content += """<td class="""
             if (x == 0):
                 if (no2 < 50):
@@ -318,7 +320,7 @@ def createhtmlcurrent(current, pollution):
                     content += '"poor">POOR</td>'
                 else:
                     content += '"verypoor">VERY POOR</td>'
-
+        #create airquality label
         content += """</tr>
                                             </table>
                                             <br>
@@ -355,10 +357,10 @@ def createhtmlcurrent(current, pollution):
         file = open(os.path.abspath(current_app.static_folder + "/current.html"), "w")
         file.write(content)
         file.close()
-        convert_to_img("current")
+        convert_to_img("current") #convert HTML to PNG
 
 
-def predict_tabular_regression_sample(
+def predict_tabular_regression_sample( #function to get prediction from autoML
         project: str,
         location: str,
         endpoint_name: str,
