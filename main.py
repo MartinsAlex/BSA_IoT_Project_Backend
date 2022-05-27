@@ -110,7 +110,7 @@ def predict_indoor_air_quality():
 
     df = df.iloc[1440:]
 
-    ENDPOINT_ID = "7435759644137488384"
+    ENDPOINT_ID = "604924909323288576"
     PROJECT_ID = "456026096583"
     LOCATION = "europe-west6"
 
