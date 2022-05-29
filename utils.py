@@ -13,7 +13,7 @@ LAUSANNE_LATITUDE = 46.52751093142267 #global variables with lausanne geographic
 LAUSANNE_LONGITUDE = 6.626519003698495
 
 def convert_to_img(txt): #function to convert html files (passed as string) to png
-    print(os.environ["CONVKEY"][2:],sys.stderr)
+    print(os.environ["CONVKEY"][2:])
     instructions = {
         'parts': [
             {
