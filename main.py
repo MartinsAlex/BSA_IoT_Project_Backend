@@ -1,5 +1,6 @@
 import base64
 import os
+import sys
 import requests
 import json
 
@@ -14,7 +15,7 @@ LAUSANNE_LATITUDE = 46.52751093142267
 LAUSANNE_LONGITUDE = 6.626519003698495
 
 
-OWM_KEY = os.environ["OWMKEY"] #get keys store in server's OS
+OWM_KEY = os.environ["OWMKEY"][2:] #get keys store in server's OS
 
 @app.route("/")
 def hello(name=None):
@@ -34,6 +35,7 @@ def forecast():
 
 @app.route("/current/")
 def current():
+    print(OWM_KEY,sys.stderr)
     r_current = requests.get(
         f'https://api.openweathermap.org/data/2.5/weather?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={OWM_KEY}').json()
     r_pollution = requests.get(

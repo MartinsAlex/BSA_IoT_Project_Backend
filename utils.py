@@ -13,6 +13,7 @@ LAUSANNE_LATITUDE = 46.52751093142267 #global variables with lausanne geographic
 LAUSANNE_LONGITUDE = 6.626519003698495
 
 def convert_to_img(txt): #function to convert html files (passed as string) to png
+    print(os.environ["CONVKEY"][2:],sys.stderr)
     instructions = {
         'parts': [
             {
@@ -30,7 +31,7 @@ def convert_to_img(txt): #function to convert html files (passed as string) to p
         'POST',
         'https://api.pspdfkit.com/build',
         headers={
-            'Authorization': 'Bearer ' + os.environ["CONVKEY"] #add key stored in OS
+            'Authorization': 'Bearer ' + os.environ["CONVKEY"][2:] #add key stored in OS
         },
         files={
             'document': open(os.path.abspath(current_app.static_folder + "/" + txt+".html"), 'rb') #read html file to convert
