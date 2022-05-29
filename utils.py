@@ -6,7 +6,7 @@ import os
 from flask import current_app
 import json
 import datetime as dt
-from datetime import timezone
+from datetime import timedelta, timezone
 from google.cloud import aiplatform
 from typing import List, Dict
 
@@ -14,7 +14,6 @@ LAUSANNE_LATITUDE = 46.52751093142267 #global variables with lausanne geographic
 LAUSANNE_LONGITUDE = 6.626519003698495
 
 def convert_to_img(txt): #function to convert html files (passed as string) to png
-    print(os.environ["CONVKEY"][2:])
     instructions = {
         'parts': [
             {
@@ -240,7 +239,7 @@ def createhtmlcurrent(current, pollution):
                                     <div class="card bg-light mx-auto">
                                         <div class="card-body">
                                             <h1 class="display-3" style="text-align: center; margin-bottom: 20px;">Current Weather</h1>
-                                            <h1 class="clock">""" + (dt.datetime.now(pytz.timezone('Europe/Zurich'))).strftime("%H:%M") + """</h1>
+                                            <h1 class="clock">""" + (dt.datetime.now(pytz.timezone('Europe/Zurich')) + timedelta(hours=2)).strftime("%H:%M") + """</h1>
                                             <h2>Location : <b style="color : darkblue;">Lausanne (CH)</b> </h2>
     
                                             <h4>Long : <i style="color : darkblue;">""" + str(

@@ -35,7 +35,6 @@ def forecast():
 
 @app.route("/current/")
 def current():
-    print(OWM_KEY)
     r_current = requests.get(
         f'https://api.openweathermap.org/data/2.5/weather?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={OWM_KEY}').json()
     r_pollution = requests.get(
