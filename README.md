@@ -15,4 +15,5 @@ This backend which is dockerized served the frontend to get values from differen
 - *utils.py* : Conatins all used functions
   
 ## Keys management
-All important keys for OpenWeather's API and PSPDFKit are stored in a Dockerfile to simulate insert them in the OS' path of the dockerized server as it should be done in an industry server.
+API keys (OpenWeather and PSPDFKit) are registered as environment variables, 
+as specified in the Dockerfile.

@@ -2,7 +2,6 @@ import base64
 import os
 import requests
 import json
-import datetime
 
 from flask import Flask, jsonify
 from flask import render_template
@@ -42,8 +41,6 @@ def current():
     r_pollution = requests.get(
         f'https://api.openweathermap.org/data/2.5/air_pollution?lat={LAUSANNE_LATITUDE}&lon={LAUSANNE_LONGITUDE}&appid={OWM_KEY}').json()
 
-    print(r_current, r_pollution)
-
     createhtmlcurrent(r_current, r_pollution)
     file = open(os.path.abspath(app.static_folder + '/' + "current" + '.png'),'rb') #open img and read it in binary
     data = file.read()
@@ -54,11 +51,11 @@ def current():
 def predict_indoor_air_quality():
 
     BIG_QUERY_CLIENT = bigquery.Client() #connection with bigquery
-    #query to retrive last 3000 lines
+    #query to retrive last 2000 lines
     query_string = """
         SELECT * FROM `unilbigscaleanalytics.IoT_Project.bme680`
         ORDER BY `timestamp` DESC
-        LIMIT 3000
+        LIMIT 2000
     """
     #create df from the query
     df = (
