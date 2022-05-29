@@ -16,8 +16,6 @@ LAUSANNE_LONGITUDE = 6.626519003698495
 
 
 OWM_KEY = os.environ["OWMKEY"][2:] #get keys store in server's OS
-keyconvert = os.environ["CONVKEY"][2:]
-
 
 @app.route("/")
 def hello(name=None):

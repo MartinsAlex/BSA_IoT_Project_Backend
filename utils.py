@@ -1,3 +1,5 @@
+from sys import stderr
+import sys
 import requests
 import os
 from flask import current_app
@@ -43,6 +45,8 @@ def convert_to_img(txt): #function to convert html files (passed as string) to p
         with open(os.path.abspath(current_app.static_folder + '/' + txt + '.png'), 'wb') as fd: #store returned file as png
             for chunk in response.iter_content(chunk_size=8096): #safe chunk size to convert without loss
                 fd.write(chunk)
+    else:
+        print(response.status_code)
     return 1
 
 
