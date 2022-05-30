@@ -95,7 +95,7 @@ def predict_indoor_air_quality():
         instances=instances
     )
 
-    return jsonify(json.loads(prediction)) #return result of automl as JSON
+    return jsonify(json.dumps(prediction)) #return result of automl as JSON
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
