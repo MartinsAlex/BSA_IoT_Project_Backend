@@ -13,7 +13,10 @@ This backend which is dockerized served the frontend to get values from differen
 - *Templates folder* : Contains all HTML pages of the service
 - *main.py* : Is the executable file to launch the server
 - *utils.py* : Conatins all used functions
-  
+
 ## Keys management
 API keys (OpenWeather and PSPDFKit) are registered as environment variables, 
-as specified in the Dockerfile.
+as specified in the Dockerfile. You can replaced them with yours.
+
+Follow that tutorial to deploy the application on Google Cloud Run:
+[https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-python-service](https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-python-service)
